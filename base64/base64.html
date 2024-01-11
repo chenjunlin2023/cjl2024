@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> Base64解密</title>
+  <meta name='robots' content='max-image-preview:large' />
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/codemirror.min.js"></script>
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/addon/mode/simple.min.js"></script>
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/codemirror.min.css">
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/theme/material.min.css">
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/htmlmixed/htmlmixed.js"></script>
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/css/css.js"></script>
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/javascript/javascript.js"></script>
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/xml/xml.js"></script>
+  <script src="format.js"></script>
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" type="text/css">
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.4/clipboard.min.js"></script>
+
+</head>
+
+<body>
+  <script>
+    var is_home = false;
+  </script>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div id="compiler" class="card-header">
+            <form class="form-inline" role="form">
+              <div class="col-md-8">
+                <button type="button" class="btn btn-outline-primary" id="submitBTN"><i class="fa fa-compress"></i>
+                  编码</button>
+                <button type="button" class="btn btn-outline-dark" id="submitBTN2"><i class="fa fa-expand"></i>
+                  解码</button>
+                <button type="button" class="btn btn-warning  mr-sm-1" id="copycode"><i class="fa fa-copy"></i>
+                  复制</button>
+                <button type="button" class="btn btn-danger  mr-sm-1" onclick="javascript:clearAll()"><i
+                    class="fas fa-eraser"></i> 清空</button>
+              </div>
+              <div class="col-md-4">
+                <label class="float-right"><strong style="font-size: 16px"><i class="fa fa-cogs"></i> Base64
+                    编码/解码</strong></label>
+              </div>
+            </form>
+          </div>
+          <div class="card-body">
+            <form role="form" id="compiler-form">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-6">
+                    <textarea class="form-control" id="code" name="code" rows="10"></textarea>
+                  </div>
+                  <div class="col-md-6">
+                    <textarea placeholder="运行结果" class="form-control" id="compiler-textarea-result"
+                      rows="10"></textarea>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+      <script>
+        var Base64 = {
+          _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function (input) {
+            var output = ""; var chr1, chr2, chr3, enc1, enc2, enc3, enc4; var i = 0; input = Base64._utf8_encode(input); while (i < input.length) {
+              chr1 = input.charCodeAt(i++); chr2 = input.charCodeAt(i++); chr3 = input.charCodeAt(i++); enc1 = chr1 >> 2; enc2 = ((chr1 & 3) << 4) | (chr2 >> 4); enc3 = ((chr2 & 15) << 2) | (chr3 >> 6); enc4 = chr3 & 63; if (isNaN(chr2)) { enc3 = enc4 = 64; } else if (isNaN(chr3)) { enc4 = 64; }
+              output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+            }
+            return output;
+          }, decode: function (input) {
+            var output = ""; var chr1, chr2, chr3; var enc1, enc2, enc3, enc4; var i = 0; input = input.replace(/[^A-Za-z0-9\+\/\=]/g, ""); while (i < input.length) {
+              enc1 = this._keyStr.indexOf(input.charAt(i++)); enc2 = this._keyStr.indexOf(input.charAt(i++)); enc3 = this._keyStr.indexOf(input.charAt(i++)); enc4 = this._keyStr.indexOf(input.charAt(i++)); chr1 = (enc1 << 2) | (enc2 >> 4); chr2 = ((enc2 & 15) << 4) | (enc3 >> 2); chr3 = ((enc3 & 3) << 6) | enc4; output = output + String.fromCharCode(chr1); if (enc3 != 64) { output = output + String.fromCharCode(chr2); }
+              if (enc4 != 64) { output = output + String.fromCharCode(chr3); }
+            }
+            output = Base64._utf8_decode(output); return output;
+          }, _utf8_encode: function (string) {
+            string = string.replace(/\r\n/g, "\n"); var utftext = ""; for (var n = 0; n < string.length; n++) {
+              var c = string.charCodeAt(n); if (c < 128) { utftext += String.fromCharCode(c); }
+              else if ((c > 127) && (c < 2048)) { utftext += String.fromCharCode((c >> 6) | 192); utftext += String.fromCharCode((c & 63) | 128); }
+              else { utftext += String.fromCharCode((c >> 12) | 224); utftext += String.fromCharCode(((c >> 6) & 63) | 128); utftext += String.fromCharCode((c & 63) | 128); }
+            }
+            return utftext;
+          }, _utf8_decode: function (utftext) {
+            var string = ""; var i = 0; var c = c1 = c2 = 0; while (i < utftext.length) {
+              c = utftext.charCodeAt(i); if (c < 128) { string += String.fromCharCode(c); i++; }
+              else if ((c > 191) && (c < 224)) { c2 = utftext.charCodeAt(i + 1); string += String.fromCharCode(((c & 31) << 6) | (c2 & 63)); i += 2; }
+              else { c2 = utftext.charCodeAt(i + 1); c3 = utftext.charCodeAt(i + 2); string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63)); i += 3; }
+            }
+            return string;
+          }
+        }
+
+
+
+
+        var editor1 = CodeMirror.fromTextArea(document.getElementById("code"), {
+          lineNumbers: true,
+          matchBrackets: true,
+          mode: "text/html",
+          indentUnit: 4,
+          indentWithTabs: true,
+        });
+        var editor2 = CodeMirror.fromTextArea(document.getElementById("compiler-textarea-result"), {
+          lineNumbers: true,
+          lineWrapping: true,
+          matchBrackets: true,
+          mode: "text/html",
+          indentUnit: 4,
+          indentWithTabs: true,
+        });
+
+        $("#submitBTN").click(function () {
+          var str = editor1.getValue();
+          var data = Base64.encode(str)
+          editor2.getDoc().setValue(data);
+        });
+
+        $("#submitBTN2").click(function () {
+          var str = editor1.getValue();
+          var data = Base64.decode(str)
+          editor2.getDoc().setValue(data);
+        });
+        new ClipboardJS('#copycode', {
+          text: function (trigger) {
+            return editor2.getDoc().getValue();
+          }
+        }).on('success', function (e) {
+          $("#copycode").text('已复制');
+          selectAll();
+          setTimeout(function () {
+            $("#copycode").html('<i class="fa fa-copy"></i> 复制')
+          }, 2000);
+          e.clearSelection();
+        }).on('error', function (e) {
+          alert('Error!');
+        });
+
+        function selectAll() {
+          if (editor2) {
+            editor2.execCommand('selectAll');
+          }
+        }
+
+        function clearAll() {
+          if (editor1 && editor2) {
+            editor1.setValue('');
+            editor2.setValue('');
+            editor1.clearHistory();
+            editor2.clearHistory();
+          }
+          return false;
+        }
+
+      </script>
+    </div>
+  </div>
+</body>
+</html>
